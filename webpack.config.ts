@@ -6,12 +6,7 @@ module.exports = {
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   entry: slsw.lib.entries,
   externalsPresets: { node: true },
-  externals: [
-    nodeExternals(),
-    // {
-    //   allowlist: ['@middy/core', '@middy/http-json-body-parser'],
-    // }),
-  ],
+  externals: [nodeExternals()],
   resolve: {
     extensions: ['.ts', 'tsx'],
   },

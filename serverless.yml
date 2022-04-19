@@ -1,21 +1,21 @@
-service: image-api-task
+service: image-api
 frameworkVersion: '3'
 
 plugins:
   - serverless-webpack
   - serverless-offline
   # - serverless-dotenv-plugin
-package:
-  individually: true
+# package:
+#   individually: true
 
 # useDotenv: true
 
 custom:
   webpack:
     webpackConfig: 'webpack.config.ts' # Name of webpack configuration file
-    # includeModules: false # Node modules configuration for packaging
+    includeModules: true # Node modules configuration for packaging
     packager: 'npm' # Packager that will be used to package your external modules
-    excludeFiles: src/**/*.test.js # Provide a glob for files to ignore
+    # excludeFiles: src/**/*.test.js # Provide a glob for files to ignore
 
 provider:
   name: aws
@@ -34,11 +34,11 @@ provider:
             - cognito-idp:AdminSetUserPassword
           Resource: '*'
 
-        - Effect: Allow
-          Action:
-            - dynamodb:*
-          Resource:
-            - arn:aws:dynamodb:us-east-1:513476794027:table/UserTable
+        # - Effect: Allow
+        #   Action:
+        #     - dynamodb:*
+        #   Resource:
+        #     - arn:aws:dynamodb:us-east-1:513476794027:table/UserTable
 
 functions:
   signupUser:
@@ -79,7 +79,7 @@ resources:
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: serverless-auth-pool
+        UserPoolName: image-auth-pool
         Schema:
           - Name: email
             Required: true
@@ -100,14 +100,14 @@ resources:
         ExplicitAuthFlows:
           - 'ADMIN_NO_SRP_AUTH'
 
-    UserTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: UserTable
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
+    # UserTable:
+    #   Type: AWS::DynamoDB::Table
+    #   Properties:
+    #     TableName: UserTable
+    #     BillingMode: PAY_PER_REQUEST
+    #     AttributeDefinitions:
+    #       - AttributeName: id
+    #         AttributeType: S
+    #     KeySchema:
+    #       - AttributeName: id
+    #         KeyType: HASH

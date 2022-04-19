@@ -7,9 +7,10 @@ module.exports = {
   entry: slsw.lib.entries,
   externalsPresets: { node: true },
   externals: [
-    nodeExternals({
-      allowlist: ['@middy/core', '@middy/http-json-body-parser'],
-    }),
+    nodeExternals(),
+    // {
+    //   allowlist: ['@middy/core', '@middy/http-json-body-parser'],
+    // }),
   ],
   resolve: {
     extensions: ['.ts', 'tsx'],

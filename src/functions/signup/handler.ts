@@ -63,18 +63,3 @@ const handler = async (event: Event) => {
 };
 
 export const signup = middyfy(handler);
-
-// const dynamodb = new AWS.DynamoDB.DocumentClient();
-// const id = uuidv4();
-
-// const newUser = {
-//   id,
-//   email,
-// };
-
-// await dynamodb
-//   .put({
-//     TableName: 'UserTable',
-//     Item: newUser,
-//   })
-//   .promise();

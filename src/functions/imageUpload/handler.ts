@@ -28,15 +28,12 @@ const handler = async (event: Event) => {
     const resaltDb = await dynamodb
       .get({ TableName: 'ImageTable', Key: { id: email } })
       .promise();
-    console.log('resaltDb: ', resaltDb);
-    console.log('imageLink: ', imageLink);
 
     if (resaltDb.Item === undefined) {
       const newImage = {
         id: email,
         imageLink: [imageLink],
       };
-      console.log('newImage1: ', newImage);
       await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
     } else {
       const imageLinkArr = resaltDb.Item.imageLink;
@@ -44,8 +41,6 @@ const handler = async (event: Event) => {
         id: email,
         imageLink: imageLinkArr.concat(imageLink),
       };
-      console.log('newImage0: ', newImage);
-      console.log('imageLinkArr: ', imageLinkArr);
       await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
     }
 

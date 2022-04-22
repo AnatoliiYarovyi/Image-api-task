@@ -1,5 +1,4 @@
 import AWS from 'aws-sdk';
-import { v4 } from 'uuid';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from './interface';
@@ -10,6 +9,7 @@ const handler = async (event: Event) => {
   try {
     const s3 = new AWS.S3();
     const dynamodb = new AWS.DynamoDB.DocumentClient();
+    const email = event.requestContext.authorizer.claims.email;
 
     const { image } = event.body;
     const decodedFile = Buffer.from(
@@ -23,21 +23,36 @@ const handler = async (event: Event) => {
       ContentType: 'image/jpeg',
     };
     const uploadResult = await s3.upload(params).promise();
+    const imageLink = uploadResult.Location;
 
-    const newImage = {
-      id: v4(),
-      email: event.requestContext.authorizer.claims.email,
-      imageLink: uploadResult.Location,
-    };
-    const putResult = await dynamodb
-      .put({ TableName: 'ImageTable', Item: newImage })
+    const resaltDb = await dynamodb
+      .get({ TableName: 'ImageTable', Key: { id: email } })
       .promise();
+    console.log('resaltDb: ', resaltDb);
+    console.log('imageLink: ', imageLink);
+
+    if (resaltDb.Item === undefined) {
+      const newImage = {
+        id: email,
+        imageLink: [imageLink],
+      };
+      console.log('newImage1: ', newImage);
+      await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
+    } else {
+      const imageLinkArr = resaltDb.Item.imageLink;
+      const newImage = {
+        id: email,
+        imageLink: imageLinkArr.concat(imageLink),
+      };
+      console.log('newImage0: ', newImage);
+      console.log('imageLinkArr: ', imageLinkArr);
+      await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
+    }
 
     const body = {
       status: 'success',
-      message: `Email ${event.requestContext.authorizer.claims.email} has been authorized`,
+      message: `Email ${email} has been authorized`,
       uploadResult,
-      putResult,
     };
 
     return {

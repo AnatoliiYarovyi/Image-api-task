@@ -28,7 +28,6 @@ const handler = async (event: Event) => {
     const resaltDb = await dynamodb
       .get({ TableName: 'ImageTable', Key: { id: email } })
       .promise();
-
     if (resaltDb.Item === undefined) {
       const newImage = {
         id: email,

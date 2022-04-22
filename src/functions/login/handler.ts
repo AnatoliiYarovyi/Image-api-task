@@ -26,8 +26,6 @@ const handler = async (event: Event) => {
       .get({ TableName: 'ImageTable', Key: { id: email } })
       .promise();
 
-    console.log('resaltDb: ', resaltDb);
-
     const body = {
       status: 'success',
       message: 'Login successful',

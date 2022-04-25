@@ -6,7 +6,6 @@ import { Event } from './interface';
 const handler = async (event: Event) => {
   try {
     const cognito = new AWS.CognitoIdentityServiceProvider();
-    const dynamodb = new AWS.DynamoDB.DocumentClient();
 
     const { email, password } = event.body;
     const { user_pool_id, client_id } = process.env;
@@ -22,17 +21,11 @@ const handler = async (event: Event) => {
     };
     const response = await cognito.adminInitiateAuth(params).promise();
 
-    const resaltDb = await dynamodb
-      .get({ TableName: 'ImageTable', Key: { id: email } })
-      .promise();
-
     const body = {
       status: 'success',
       message: 'Login successful',
       token: response.AuthenticationResult.IdToken,
-      resaltDb,
     };
-
     return {
       statusCode: 200,
       body,

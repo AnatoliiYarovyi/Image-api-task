@@ -1,6 +1,6 @@
 service: image-api
 frameworkVersion: '3'
-# configValidationMode: error
+configValidationMode: error
 
 plugins:
   - serverless-webpack
@@ -72,6 +72,23 @@ functions:
       - http:
           path: /imageUpload
           method: post
+          cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - UserPool
+                - Arn
+            claims:
+              - email
+
+  getAllImages:
+    handler: src/functions/getAllImages/handler.getAllImages
+    events:
+      - http:
+          path: /getAllImages
+          method: get
           cors: true
           authorizer:
             name: PrivateAuthorizer

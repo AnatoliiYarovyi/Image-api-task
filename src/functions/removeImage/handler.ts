@@ -9,8 +9,6 @@ const handler = async (event: Event) => {
     const email = event.requestContext.authorizer.claims.email;
     const { image } = event.pathParameters;
     const imageLink = `https://s3.amazonaws.com/image.s3.bucket/images/${image}`;
-    console.log('image: ', image);
-    console.log('event.pathParameters: ', event.pathParameters);
 
     const resaltDb = await dynamodb
       .get({ TableName: 'ImageTable', Key: { id: email } })

@@ -100,6 +100,23 @@ functions:
             claims:
               - email
 
+  removeImage:
+    handler: src/functions/removeImage/handler.removeImage
+    events:
+      - http:
+          path: /removeImage/{image}
+          method: get
+          cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - UserPool
+                - Arn
+            claims:
+              - email
+
 resources:
   Resources:
     UserPool:

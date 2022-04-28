@@ -148,6 +148,16 @@ resources:
       Properties:
         BucketName: ${self:custom.fileUploadBucketName}
         AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - HEAD
+              AllowedOrigins:
+                - '*'
 
     UserTable:
       Type: AWS::DynamoDB::Table

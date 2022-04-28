@@ -30,11 +30,11 @@ const handler = async (event: Event) => {
     const params = {
       Bucket: BUCKET_NAME,
       Fields: {
-        key: `image/${new Date().toISOString()}.jpeg`,
+        key: `images/${new Date().toISOString()}.jpeg`,
       },
       Conditions: [
         ['content-length-range', 0, 10000000], // content length restrictions: 0-10MB
-        ['starts-with', '$key', 'image/'],
+        ['starts-with', '$key', 'images/'],
         ['starts-with', '$Content-Type', 'image/'], // content type restriction
       ],
     };

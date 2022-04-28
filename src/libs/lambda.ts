@@ -9,23 +9,25 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
 > => {
   const before: middy.MiddlewareFn = async (request): Promise<void> => {
     const { email, password } = request.event.body;
-    const schema = Joi.object({
-      email: Joi.string().email({
-        minDomainSegments: 2,
-        tlds: { allow: ['com', 'net'] },
-      }),
-      password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-    });
-    try {
-      const value = await schema.validateAsync({
-        email: email,
-        password: password,
+    if (email) {
+      const schema = Joi.object({
+        email: Joi.string().email({
+          minDomainSegments: 2,
+          tlds: { allow: ['com', 'net'] },
+        }),
+        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
       });
-      console.log('value: ', value);
-      return;
-    } catch (error) {
-      console.error(error);
-      throw error;
+      try {
+        const value = await schema.validateAsync({
+          email: email,
+          password: password,
+        });
+        console.log('value: ', value);
+        return;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
     }
   };
   const after: middy.MiddlewareFn<

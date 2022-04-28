@@ -11,19 +11,48 @@ const handler = async (event: Event) => {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
     const email = event.requestContext.authorizer.claims.email;
 
-    const { image } = event.body;
-    const decodedFile = Buffer.from(
-      image.replace(/^data:image\/\w+;base64,/, ''),
-      'base64',
-    );
+    // //  --> old version save images in S3 <--
+    //
+    // const { image } = event.body;
+    // const decodedFile = Buffer.from(
+    //   image.replace(/^data:image\/\w+;base64,/, ''),
+    //   'base64',
+    // );
+    // const params = {
+    //   Bucket: BUCKET_NAME,
+    //   Key: `images/${new Date().toISOString()}.jpeg`,
+    //   Body: decodedFile,
+    //   ContentType: 'image/jpeg',
+    // };
+    // const uploadResult = await s3.upload(params).promise();
+    // const imageS3Link = uploadResult.Location;
+    // ================================================================
     const params = {
       Bucket: BUCKET_NAME,
-      Key: `images/${new Date().toISOString()}.jpeg`,
-      Body: decodedFile,
-      ContentType: 'image/jpeg',
+      Fields: {
+        key: `image/${new Date().toISOString()}.jpeg`,
+      },
+      Conditions: [
+        ['content-length-range', 0, 10000000], // content length restrictions: 0-10MB
+        ['starts-with', '$key', 'image/'],
+        ['starts-with', '$Content-Type', 'image/'], // content type restriction
+      ],
     };
-    const uploadResult = await s3.upload(params).promise();
-    const imageLink = uploadResult.Location;
+
+    const s3Data = {
+      data: {},
+    };
+    await s3.createPresignedPost(params, function (err, data) {
+      if (err) {
+        console.error('Presigning post data encountered an error', err);
+      } else {
+        console.log('The post data is', data);
+        s3Data.data = data;
+        return;
+      }
+    });
+    const imageS3Link = `https://s3.amazonaws.com/image.s3.bucket/${params.Fields.key}`;
+    // ================================================================
 
     const resaltDb = await dynamodb
       .get({ TableName: 'ImageTable', Key: { id: email } })
@@ -31,14 +60,14 @@ const handler = async (event: Event) => {
     if (resaltDb.Item === undefined) {
       const newImage = {
         id: email,
-        imageLink: [imageLink],
+        imageLink: [imageS3Link],
       };
       await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
     } else {
       const imageLinkArr = resaltDb.Item.imageLink;
       const newImage = {
         id: email,
-        imageLink: imageLinkArr.concat(imageLink),
+        imageLink: imageLinkArr.concat(imageS3Link),
       };
       await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
     }
@@ -46,7 +75,7 @@ const handler = async (event: Event) => {
     const body = {
       status: 'success',
       message: `Email ${email} has been authorized`,
-      uploadResult,
+      s3Data: s3Data.data,
     };
 
     return {

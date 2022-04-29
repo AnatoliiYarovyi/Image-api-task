@@ -40,13 +40,15 @@ const handler = async (event: Event) => {
         Bucket: BUCKET_NAME,
         Key: `images/${image}`,
       };
-      await s3.deleteObject(params, function (err, data) {
-        if (err) {
-          console.log(err, err.stack); // an error occurred
-        } else {
-          console.log(data);
-        }
-      });
+      await s3
+        .deleteObject(params, function (err, data) {
+          if (err) {
+            console.log(err, err.stack); // an error occurred
+          } else {
+            console.log(data);
+          }
+        })
+        .promise();
 
       const body = {
         status: 'success',

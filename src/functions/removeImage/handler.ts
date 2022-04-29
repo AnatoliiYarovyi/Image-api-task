@@ -13,19 +13,6 @@ const handler = async (event: Event) => {
     const { image } = event.pathParameters;
     const imageLink = `https://s3.amazonaws.com/image.s3.bucket/images/${image}`;
 
-    // remove image(object) from bucket
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: `images/${image}`,
-    };
-    s3.deleteObject(params, function (err, data) {
-      if (err) {
-        console.log(err, err.stack); // an error occurred
-      } else {
-        console.log(data);
-      }
-    });
-
     // remove linkImage(object) from dynamoDB
     const resaltDb = await dynamodb
       .get({ TableName: 'ImageTable', Key: { id: email } })
@@ -47,6 +34,19 @@ const handler = async (event: Event) => {
         imageLink: imageLinkArr.filter(image => image !== imageLink),
       };
       await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
+
+      // remove image(object) from bucket
+      const params = {
+        Bucket: BUCKET_NAME,
+        Key: `images/${image}`,
+      };
+      await s3.deleteObject(params, function (err, data) {
+        if (err) {
+          console.log(err, err.stack); // an error occurred
+        } else {
+          console.log(data);
+        }
+      });
 
       const body = {
         status: 'success',

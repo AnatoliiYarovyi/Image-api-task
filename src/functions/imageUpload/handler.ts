@@ -31,11 +31,13 @@ const handler = async (event: Event) => {
       Bucket: BUCKET_NAME,
       Fields: {
         key: `images/${new Date().toISOString()}.jpeg`,
+        acl: 'public-read',
       },
       Conditions: [
         ['content-length-range', 0, 10000000], // content length restrictions: 0-10MB
         ['starts-with', '$key', 'images/'],
         ['starts-with', '$Content-Type', 'image/'], // content type restriction
+        { acl: 'public-read' },
       ],
     };
 

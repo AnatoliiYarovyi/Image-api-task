@@ -26,7 +26,7 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
         return;
       } catch (error) {
         console.error(error);
-        throw error;
+        throw new Error(`Joi validation error ${error}`);
       }
     }
   };

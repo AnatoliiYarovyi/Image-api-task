@@ -3,7 +3,7 @@ import middyJsonBodyParser from '@middy/http-json-body-parser';
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import Joi from 'joi';
 
-const middlewareEditResponse = (): middy.MiddlewareObj<
+const middlewareJoiValidate = (): middy.MiddlewareObj<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
 > => {
@@ -30,12 +30,18 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
       }
     }
   };
+  return { before };
+};
+
+const middlewareEditResponse = (): middy.MiddlewareObj<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult
+> => {
   const after: middy.MiddlewareFn<
     APIGatewayProxyEvent,
     APIGatewayProxyResult
   > = async (request): Promise<void> => {
     const { statusCode, body } = request.response;
-
     request.response = {
       headers: {
         'Content-Type': 'application/json',
@@ -44,12 +50,12 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
       body: JSON.stringify(body),
     };
   };
-
-  return { before, after };
+  return { after };
 };
 
 export const middyfy = handler => {
   return middy(handler)
     .use(middyJsonBodyParser())
+    .use(middlewareJoiValidate())
     .use(middlewareEditResponse());
 };

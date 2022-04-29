@@ -42,7 +42,7 @@ const handler = async (event: Event) => {
     const s3Data = {
       data: {},
     };
-    await s3.createPresignedPost(params, function (err, data) {
+    s3.createPresignedPost(params, function (err, data) {
       if (err) {
         console.error('Presigning post data encountered an error', err);
       } else {

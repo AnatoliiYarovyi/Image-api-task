@@ -8,8 +8,8 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
   APIGatewayProxyResult
 > => {
   const before: middy.MiddlewareFn = async (request): Promise<void> => {
-    const { email, password } = request.event.body;
-    if (email) {
+    if (request.event.body !== null) {
+      const { email, password } = request.event.body;
       const schema = Joi.object({
         email: Joi.string().email({
           minDomainSegments: 2,

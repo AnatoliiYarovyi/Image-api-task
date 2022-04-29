@@ -64,7 +64,7 @@ const handler = async (event: Event) => {
       };
       await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
     } else {
-      const imageLinkArr = resaltDb.Item.imageLink;
+      const imageLinkArr: string[] = resaltDb.Item.imageLink;
       const newImage = {
         id: email,
         imageLink: imageLinkArr.concat(imageS3Link),

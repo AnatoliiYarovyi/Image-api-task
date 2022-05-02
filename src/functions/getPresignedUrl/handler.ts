@@ -95,4 +95,4 @@ const handler = async (event: Event) => {
   }
 };
 
-export const imageUpload = middyfy(handler);
+export const getPresignedUrl = middyfy(handler);

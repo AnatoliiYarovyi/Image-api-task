@@ -66,12 +66,12 @@ functions:
           method: post
           # cors: true
 
-  imageUpload:
-    handler: src/functions/imageUpload/handler.imageUpload
+  getPresignedUrl:
+    handler: src/functions/getPresignedUrl/handler.getPresignedUrl
     events:
       - http:
-          path: /imageUpload
-          method: post
+          path: /getPresignedUrl
+          method: get
           cors: true
           authorizer:
             name: PrivateAuthorizer
@@ -105,7 +105,7 @@ functions:
     events:
       - http:
           path: /removeImage/{image}
-          method: get
+          method: delete
           cors: true
           authorizer:
             name: PrivateAuthorizer

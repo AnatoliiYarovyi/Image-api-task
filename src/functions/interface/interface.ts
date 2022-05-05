@@ -9,13 +9,13 @@ export interface Event<T> {
   };
 }
 
-export interface Request {
+export interface Request<T> {
   event: {
-    rawPath?: string; // post
-    resource?: string; // get & delete
+    rawPath?: T; // post
+    resource?: T; // get & delete
     body?: {
-      email: string;
-      password: string;
+      email: T;
+      password: T;
     };
   };
 }

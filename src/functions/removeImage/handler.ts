@@ -1,11 +1,11 @@
 import AWS from 'aws-sdk';
 
 import { middyfy } from '../../libs/lambda';
-import { Event } from './interface';
+import { Event } from '../interface/event';
 
 const BUCKET_NAME = process.env.FILE_UPLOAD_BUCKET_NAME;
 
-const handler = async (event: Event) => {
+const handler = async (event: Event<string>) => {
   try {
     const s3 = new AWS.S3();
     const dynamodb = new AWS.DynamoDB.DocumentClient();

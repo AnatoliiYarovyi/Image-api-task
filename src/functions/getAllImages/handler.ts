@@ -1,9 +1,9 @@
 import AWS from 'aws-sdk';
 
 import { middyfy } from '../../libs/lambda';
-import { Event } from './interface';
+import { Event } from '../interface/event';
 
-const handler = async (event: Event) => {
+const handler = async (event: Event<string>) => {
   try {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
     const email = event.requestContext.authorizer.claims.email;

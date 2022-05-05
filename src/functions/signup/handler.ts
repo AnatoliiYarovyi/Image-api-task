@@ -2,9 +2,9 @@ import AWS from 'aws-sdk';
 import { v4 } from 'uuid';
 
 import { middyfy } from '../../libs/lambda';
-import { Event } from './interface';
+import { Event } from '../interface/event';
 
-const handler = async (event: Event) => {
+const handler = async (event: Event<string>) => {
   try {
     const cognito = new AWS.CognitoIdentityServiceProvider();
     const dynamodb = new AWS.DynamoDB.DocumentClient();

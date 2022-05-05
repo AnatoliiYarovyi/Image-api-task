@@ -47,7 +47,13 @@ provider:
           Action:
             - dynamodb:*
           Resource:
-            - arn:aws:dynamodb:us-east-1:513476794027:table/ImageTable
+            - arn:aws:dynamodb:us-east-1:513476794027:table/Users
+
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:us-east-1:513476794027:table/Images
 
 functions:
   signupUser:
@@ -159,10 +165,22 @@ resources:
               AllowedOrigins:
                 - '*'
 
-    UserTable:
+    UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ImageTable
+        TableName: Users
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+
+    ImagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Images
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: id

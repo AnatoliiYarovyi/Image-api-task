@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { v4 } from 'uuid';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from './interface';
@@ -11,26 +12,10 @@ const handler = async (event: Event) => {
     const dynamodb = new AWS.DynamoDB.DocumentClient();
     const email = event.requestContext.authorizer.claims.email;
 
-    // //  --> old version save images in S3 <--
-    //
-    // const { image } = event.body;
-    // const decodedFile = Buffer.from(
-    //   image.replace(/^data:image\/\w+;base64,/, ''),
-    //   'base64',
-    // );
-    // const params = {
-    //   Bucket: BUCKET_NAME,
-    //   Key: `images/${new Date().toISOString()}.jpeg`,
-    //   Body: decodedFile,
-    //   ContentType: 'image/jpeg',
-    // };
-    // const uploadResult = await s3.upload(params).promise();
-    // const imageS3Link = uploadResult.Location;
-    // ================================================================
     const params = {
       Bucket: BUCKET_NAME,
       Fields: {
-        key: `images/${new Date().toISOString()}.jpeg`,
+        key: `images/${v4()}.jpeg`,
         acl: 'public-read',
       },
       Conditions: [
@@ -41,45 +26,37 @@ const handler = async (event: Event) => {
       ],
     };
 
-    const s3Data = {
+    const presignedPostData = {
       data: {},
     };
     s3.createPresignedPost(params, function (err, data) {
       if (err) {
-        console.error('Presigning post data encountered an error', err);
+        console.error('Presigning post data encountered an error: ', err);
       } else {
-        console.log('The post data is', data);
-        s3Data.data = data;
+        console.log('The post data is: ', data);
+        presignedPostData.data = data;
         return;
       }
     });
     const imageS3Link = `https://s3.amazonaws.com/image.s3.bucket/${params.Fields.key}`;
-    // ================================================================
 
-    const resaltDb = await dynamodb
-      .get({ TableName: 'ImageTable', Key: { id: email } })
+    const currentUserDb = await dynamodb
+      .get({ TableName: 'Users', Key: { email: email } })
       .promise();
-    if (resaltDb.Item === undefined) {
-      const newImage = {
-        id: email,
-        imageLink: [imageS3Link],
-      };
-      await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
-    } else {
-      const imageLinkArr: string[] = resaltDb.Item.imageLink;
-      const newImage = {
-        id: email,
-        imageLink: imageLinkArr.concat(imageS3Link),
-      };
-      await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
-    }
+
+    const newImage = {
+      id: v4(),
+      idUser: currentUserDb.Item.id,
+      imageLink: imageS3Link,
+      created: new Date().toISOString(),
+    };
+    await dynamodb.put({ TableName: 'Images', Item: newImage }).promise();
 
     const body = {
       status: 'success',
       message: `Email ${email} has been authorized`,
-      s3Data: s3Data.data,
+      s3Data: presignedPostData.data,
     };
-
     return {
       statusCode: 200,
       body,

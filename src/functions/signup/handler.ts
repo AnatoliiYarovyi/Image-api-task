@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { v4 } from 'uuid';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from './interface';
@@ -6,6 +7,7 @@ import { Event } from './interface';
 const handler = async (event: Event) => {
   try {
     const cognito = new AWS.CognitoIdentityServiceProvider();
+    const dynamodb = new AWS.DynamoDB.DocumentClient();
 
     const { email, password } = event.body;
     const { user_pool_id } = process.env;
@@ -43,6 +45,14 @@ const handler = async (event: Event) => {
       };
       await cognito.adminSetUserPassword(paramsForSetPass).promise();
     }
+
+    const newUser = {
+      id: v4(),
+      email: email,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+    };
+    await dynamodb.put({ TableName: 'Users', Item: newUser }).promise();
 
     const body = {
       status: 'success',

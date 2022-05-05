@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 import { Request } from '../functions/interface/interface';
 
-const joiSchema = async (request: Request) => {
+const joiSchema = async (request: Request<string>) => {
   const path = request.event.rawPath || request.event.resource;
 
   switch (path) {

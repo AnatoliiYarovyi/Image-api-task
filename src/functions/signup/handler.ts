@@ -27,7 +27,6 @@ const handler = async (event: Event<string>) => {
       ],
       MessageAction: 'SUPPRESS',
     };
-    // const response = await cognito.adminCreateUser(params).promise();
     const response = await cognito
       .adminCreateUser(params)
       .promise()

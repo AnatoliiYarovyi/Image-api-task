@@ -9,58 +9,69 @@ const handler = async (event: Event) => {
   try {
     const s3 = new AWS.S3();
     const dynamodb = new AWS.DynamoDB.DocumentClient();
-    const email = event.requestContext.authorizer.claims.email;
-    const { image } = event.pathParameters;
-    const imageLink = `https://s3.amazonaws.com/image.s3.bucket/images/${image}`;
 
-    // remove linkImage(object) from dynamoDB
-    const resaltDb = await dynamodb
-      .get({ TableName: 'ImageTable', Key: { id: email } })
+    const { image: idImage } = event.pathParameters;
+    const queryScan = {
+      TableName: 'Images',
+      FilterExpression: 'id = :this_id',
+      ExpressionAttributeValues: { ':this_id': idImage },
+    };
+    let imageLink = '';
+    await dynamodb
+      .scan(queryScan, function (err, data) {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(data);
+          const { Items } = data;
+          return (imageLink = Items[0].imageLink);
+        }
+      })
       .promise();
-    if (
-      resaltDb.Item === undefined ||
-      resaltDb.Item.imageLink.includes(imageLink) === false
-    ) {
-      return {
-        statusCode: 200,
-        body: {
-          message: 'Image not found',
-        },
-      };
-    } else {
-      const imageLinkArr: string[] = resaltDb.Item.imageLink;
-      const newImage = {
-        id: email,
-        imageLink: imageLinkArr.filter(image => image !== imageLink),
-      };
-      await dynamodb.put({ TableName: 'ImageTable', Item: newImage }).promise();
+    const paramsDelete = {
+      TableName: 'Images',
+      Key: {
+        id: idImage,
+      },
+    };
+    await dynamodb
+      .delete(paramsDelete, function (err, data) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(data);
+        }
+      })
+      .promise();
 
-      // remove image(object) from bucket
-      const params = {
-        Bucket: BUCKET_NAME,
-        Key: `images/${image}`,
-      };
-      await s3
-        .deleteObject(params, function (err, data) {
-          if (err) {
-            console.log(err, err.stack); // an error occurred
-          } else {
-            console.log(data);
-          }
-        })
-        .promise();
+    // remove image(object) from bucket
+    const image = imageLink.replace(
+      'https://s3.amazonaws.com/image.s3.bucket/images/',
+      '',
+    );
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: `images/${image}`,
+    };
+    await s3
+      .deleteObject(params, function (err, data) {
+        if (err) {
+          console.log(err, err.stack); // an error occurred
+        } else {
+          console.log(data);
+        }
+      })
+      .promise();
 
-      const body = {
-        status: 'success',
-        message: 'Get all images successful',
-        imageLink: newImage.imageLink,
-      };
+    const body = {
+      status: 'success',
+      message: `Remove image ${image} successful`,
+    };
 
-      return {
-        statusCode: 200,
-        body,
-      };
-    }
+    return {
+      statusCode: 200,
+      body,
+    };
   } catch (error) {
     return {
       statusCode: 400,

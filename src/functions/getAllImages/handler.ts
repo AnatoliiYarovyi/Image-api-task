@@ -32,7 +32,6 @@ const handler = async (event: Event<string>) => {
             });
             return acc;
           }, []);
-          console.log('imagesArr: ', imagesArr);
 
           return (images.imagesLink = imagesArr);
         }

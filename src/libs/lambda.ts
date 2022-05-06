@@ -1,7 +1,6 @@
 import middy from '@middy/core';
 import middyJsonBodyParser from '@middy/http-json-body-parser';
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-// import Joi from 'joi';
 
 import joiSchema from './joiSchema';
 

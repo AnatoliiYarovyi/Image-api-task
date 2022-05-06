@@ -49,7 +49,14 @@ const joiSchema = async (request: Request<string>) => {
       console.log('value: ', value);
     } catch (error) {
       console.log(error);
-      throw new Error(`Error joi validate ${error}`);
+      // Initialize response
+      request.response = request.response ?? {};
+      // Add(=error=) to response
+      request.response.error = `${error}`;
+      // Override an error
+      request.error = new Error(`Error joi validate ${error}`);
+      // handle the error
+      return request.response;
     }
   }
 };

@@ -18,4 +18,6 @@ export interface Request<T> {
       password: T;
     };
   };
+  response?: any;
+  error?: any;
 }

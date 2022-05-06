@@ -2,7 +2,7 @@ import AWS from 'aws-sdk';
 import { v4 } from 'uuid';
 
 import { middyfy } from '../../libs/lambda';
-import { Event } from '../interface/interface';
+import { Event } from '../../interface/interface';
 
 const handler = async (event: Event<string>) => {
   try {

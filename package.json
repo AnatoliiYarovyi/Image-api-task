@@ -37,6 +37,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@hapi/boom": "^10.0.0",
     "@middy/core": "^2.5.7",
     "@middy/http-json-body-parser": "^2.5.7",
     "aws-lambda": "^1.0.7",

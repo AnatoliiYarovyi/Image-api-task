@@ -5,7 +5,7 @@ import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
 import validateSchemas from './validateSchema';
 
-const handler = async (event: Event<string>) => {
+const handler = async (event: Event<{ email: string; password: string }>) => {
   const cognito = new AWS.CognitoIdentityServiceProvider();
 
   const { email, password } = event.body;
@@ -27,14 +27,10 @@ const handler = async (event: Event<string>) => {
       throw Boom.unauthorized(error.message);
     });
 
-  const body = {
+  return {
     status: 'success',
     message: 'Login successful',
     token: response.AuthenticationResult.IdToken,
-  };
-  return {
-    body,
-    statusCode: 200,
   };
 };
 

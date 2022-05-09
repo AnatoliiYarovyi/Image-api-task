@@ -1,9 +1,9 @@
 import AWS from 'aws-sdk';
+import Boom from '@hapi/boom';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
 import validateSchemas from './validateSchema';
-import Boom from '@hapi/boom';
 
 const handler = async (event: Event<string>) => {
   const cognito = new AWS.CognitoIdentityServiceProvider();

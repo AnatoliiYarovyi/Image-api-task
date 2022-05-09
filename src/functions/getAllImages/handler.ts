@@ -1,9 +1,9 @@
 import AWS from 'aws-sdk';
+import Boom from '@hapi/boom';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
 import validateSchema from './validateSchema';
-import Boom from '@hapi/boom';
 
 const handler = async (event: Event<string>) => {
   const dynamodb = new AWS.DynamoDB.DocumentClient();

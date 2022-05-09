@@ -6,7 +6,7 @@ import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
 import validateSchemas from './validateSchema';
 
-const handler = async (event: Event<string>) => {
+const handler = async (event: Event<{ email: string; password: string }>) => {
   const cognito = new AWS.CognitoIdentityServiceProvider();
   const dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -63,13 +63,9 @@ const handler = async (event: Event<string>) => {
       throw Boom.badImplementation(error.message);
     });
 
-  const body = {
+  return {
     status: 'success',
     message: 'User registration successful',
-  };
-
-  return {
-    body,
     statusCode: 201,
   };
 };

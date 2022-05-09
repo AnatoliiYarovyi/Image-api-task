@@ -47,13 +47,14 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
     APIGatewayProxyEvent,
     APIGatewayProxyResult
   > = async (request): Promise<void> => {
-    const { statusCode, body } = request.response;
+    const body = request.response;
+    const statusCode = body.statusCode || 200;
     request.response = {
+      body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
       },
       statusCode,
-      body: JSON.stringify(body),
     };
   };
   return { after };

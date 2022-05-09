@@ -3,7 +3,6 @@ import Boom from '@hapi/boom';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
-import validateSchema from './validateSchema';
 
 const BUCKET_NAME = process.env.FILE_UPLOAD_BUCKET_NAME;
 
@@ -73,15 +72,10 @@ const handler = async (event: Event<string>) => {
       throw Boom.badImplementation(error.message);
     });
 
-  const body = {
+  return {
     status: 'success',
     message: `Remove image ${image} successful`,
   };
-
-  return {
-    body,
-    statusCode: 200,
-  };
 };
 
-export const removeImage = middyfy(handler, validateSchema);
+export const removeImage = middyfy(handler);

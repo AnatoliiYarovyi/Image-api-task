@@ -1,8 +1,5 @@
 export interface Event<T> {
-  body?: {
-    email: T;
-    password: T;
-  };
+  body?: T;
   requestContext?: { authorizer: { claims: { email: T } } };
   pathParameters?: {
     image: T;

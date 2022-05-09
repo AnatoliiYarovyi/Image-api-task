@@ -3,7 +3,6 @@ import Boom from '@hapi/boom';
 
 import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
-import validateSchema from './validateSchema';
 
 const handler = async (event: Event<string>) => {
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -45,16 +44,13 @@ const handler = async (event: Event<string>) => {
       throw Boom.badImplementation(error.message);
     });
 
-  const body = {
+  const body = {};
+
+  return {
     status: 'success',
     message: 'Get all images successful',
     imagesLink: images.imagesLink,
   };
-
-  return {
-    body,
-    statusCode: 200,
-  };
 };
 
-export const getAllImages = middyfy(handler, validateSchema);
+export const getAllImages = middyfy(handler);

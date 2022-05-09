@@ -11,7 +11,7 @@ import { ObjectSchema } from 'joi';
 import { Event } from '../interface/interface';
 
 const middlewareJoiValidate = (
-  validateSchema: ObjectSchema,
+  validateSchema?: ObjectSchema,
 ): middy.MiddlewareObj<APIGatewayProxyEvent, APIGatewayProxyResult> => {
   const before: middy.MiddlewareFn = async (request): Promise<void> => {
     const path = request.event.rawPath || request.event.resource;
@@ -24,22 +24,6 @@ const middlewareJoiValidate = (
         });
         console.log('value: ', value);
       }
-      // if (path === '/getPresignedUrl' || path === '/getAllImages') {
-      //   const { Authorization } = request.event.headers;
-      //   const value = await validateSchema.validateAsync({
-      //     accessToken: Authorization,
-      //   });
-      //   console.log('value: ', value);
-      // }
-      // if (path === '/removeImage/{image}') {
-      //   const { Authorization } = request.event.headers;
-      //   const { image } = request.event.pathParameters;
-      //   const value = await validateSchema.validateAsync({
-      //     accessToken: Authorization,
-      //     imageName: image,
-      //   });
-      //   console.log('value: ', value);
-      // }
     } catch (error) {
       console.log(error);
       // Initialize response
@@ -80,7 +64,7 @@ export const middyfy = (
     (event: Event<any>);
     (event: any, context: Context, callback: Callback<any>);
   },
-  validateSchema: ObjectSchema,
+  validateSchema?: ObjectSchema,
 ) => {
   return middy(handler)
     .use(middyJsonBodyParser())

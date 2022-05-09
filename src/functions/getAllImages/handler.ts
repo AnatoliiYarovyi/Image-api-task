@@ -14,10 +14,11 @@ const handler = async (event: Event<string>) => {
     .catch(error => {
       throw Boom.badImplementation(error.message);
     });
+  const userId = currentUserDb.Item.id;
   const queryScan = {
     TableName: 'Images',
     FilterExpression: 'idUser = :this_idUser',
-    ExpressionAttributeValues: { ':this_idUser': currentUserDb.Item.id },
+    ExpressionAttributeValues: { ':this_idUser': userId },
   };
   const images = {
     imagesLink: {},
@@ -30,8 +31,8 @@ const handler = async (event: Event<string>) => {
         const { Items } = data;
         const imagesArr = Items.reduce((acc, el) => {
           acc.push({
-            idImage: el.id,
-            image: el.imageLink,
+            id: el.id,
+            imageLink: el.imageLink,
           });
           return acc;
         }, []);
@@ -44,12 +45,11 @@ const handler = async (event: Event<string>) => {
       throw Boom.badImplementation(error.message);
     });
 
-  const body = {};
-
   return {
     status: 'success',
     message: 'Get all images successful',
-    imagesLink: images.imagesLink,
+    userId,
+    imageLinkArray: images.imagesLink,
   };
 };
 

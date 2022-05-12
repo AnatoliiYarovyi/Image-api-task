@@ -14,16 +14,9 @@ const middlewareJoiValidate = (
   validateSchema?: ObjectSchema,
 ): middy.MiddlewareObj<APIGatewayProxyEvent, APIGatewayProxyResult> => {
   const before: middy.MiddlewareFn = async (request): Promise<void> => {
-    const path = request.event.rawPath || request.event.resource;
     try {
-      if (path === '/signup' || path === '/login') {
-        const { email, password } = request.event.body;
-        const value = await validateSchema.validateAsync({
-          email,
-          password,
-        });
-        console.log('value: ', value);
-      }
+      const value = await validateSchema.validateAsync(request.event.body);
+      console.log('value: ', value);
     } catch (error) {
       console.log(error);
       // Initialize response

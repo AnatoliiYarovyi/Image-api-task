@@ -8,8 +8,8 @@ export interface Event<T> {
 
 export interface Request<T> {
   event: {
-    rawPath?: T; // post
-    resource?: T; // get & delete
+    rawPath?: T; // post - path
+    resource?: T; // get & delete - path
     body?: {
       email: T;
       password: T;

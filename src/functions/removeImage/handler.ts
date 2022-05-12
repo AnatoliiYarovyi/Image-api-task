@@ -74,7 +74,7 @@ const handler = async (event: Event<string>) => {
 
   return {
     status: 'success',
-    message: `Remove image ${image} successful`,
+    message: `Image ${image} deleted successfully`,
   };
 };
 

@@ -16,6 +16,7 @@ const handler = async (event: Event<{ email: string; password: string }>) => {
   const params = {
     UserPoolId: user_pool_id,
     Username: email,
+    MessageAction: 'SUPPRESS',
     UserAttributes: [
       {
         Name: 'email',
@@ -26,7 +27,6 @@ const handler = async (event: Event<{ email: string; password: string }>) => {
         Value: 'true',
       },
     ],
-    MessageAction: 'SUPPRESS',
   };
   const response = await cognito
     .adminCreateUser(params)
@@ -60,7 +60,7 @@ const handler = async (event: Event<{ email: string; password: string }>) => {
     .put({ TableName: 'Users', Item: newUser })
     .promise()
     .catch(error => {
-      throw Boom.badImplementation(error.message);
+      throw Boom.badImplementation(error);
     });
 
   return {

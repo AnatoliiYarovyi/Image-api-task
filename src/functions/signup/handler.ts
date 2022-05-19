@@ -52,7 +52,6 @@ const handler = async (
   return {
     status: 'success',
     message: 'User registration successful',
-    statusCode: 201,
   };
 };
 

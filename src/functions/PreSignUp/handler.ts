@@ -1,6 +1,6 @@
-import type { Callback, Context } from 'aws-lambda';
+import type { Callback } from 'aws-lambda';
 
-exports.handler = async (event: any, context: Context, callback: Callback) => {
+exports.handler = async (event: any, __, callback: Callback) => {
   // Confirm the user
   event.response.autoConfirmUser = true;
 

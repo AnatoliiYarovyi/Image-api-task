@@ -14,19 +14,21 @@ const middlewareJoiValidate = (
   validateSchema?: ObjectSchema,
 ): middy.MiddlewareObj<APIGatewayProxyEvent, APIGatewayProxyResult> => {
   const before: middy.MiddlewareFn = async (request): Promise<void> => {
-    try {
-      const value = await validateSchema.validateAsync(request.event.body);
-      console.log('value: ', value);
-    } catch (error) {
-      console.log(error);
-      // Initialize response
-      request.response = request.response ?? {};
-      // Add (.error) to response
-      request.response.error = `${error}`;
-      // Override an error
-      request.error = new Error(`Error joi validate ${error}`);
-      // handle the error
-      return request.response;
+    if (request.event.body) {
+      try {
+        const value = await validateSchema.validateAsync(request.event.body);
+        console.log('value: ', value);
+      } catch (error) {
+        console.log(error);
+        // Initialize response
+        request.response = request.response ?? {};
+        // Add (.error) to response
+        request.response.error = `${error}`;
+        // Override an error
+        request.error = new Error(`Error joi validate ${error}`);
+        // handle the error
+        return request.response;
+      }
     }
   };
   return { before };

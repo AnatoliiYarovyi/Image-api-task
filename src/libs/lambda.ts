@@ -8,7 +8,7 @@ import type {
 } from 'aws-lambda';
 import { ObjectSchema } from 'joi';
 
-import { Event } from '../interface/interface';
+import { ErrorBoom } from '../interface/interface';
 
 const middlewareJoiValidate = (
   validateSchema?: ObjectSchema,
@@ -43,21 +43,37 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
     APIGatewayProxyResult
   > = async (request): Promise<void> => {
     const body = request.response;
-    const statusCode = body.statusCode || 200;
     request.response = {
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
       },
-      statusCode,
+      statusCode: 200,
     };
   };
-  return { after };
+
+  const onError: middy.MiddlewareFn<
+    APIGatewayProxyEvent,
+    APIGatewayProxyResult
+  > = async (request): Promise<void> => {
+    console.log('*** onError ***: ', request);
+    console.log('*** onError ***: ', request.error);
+
+    const body = request.error.message || request.error;
+    const statusCode = 500; //request.error.output.statusCode
+    request.response = {
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      statusCode: statusCode,
+    };
+  };
+  return { after, onError };
 };
 
 export const middyfy = (
   handler: {
-    (event: Event<any>);
     (event: any, context: Context, callback: Callback<any>);
   },
   validateSchema?: ObjectSchema,

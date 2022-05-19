@@ -4,7 +4,7 @@ import Boom from '@hapi/boom';
 import { middyfy } from '../../libs/lambda';
 import { Event } from '../../interface/interface';
 
-const handler = async (event: Event<string>) => {
+const handler = async (event: Event) => {
   const dynamodb = new AWS.DynamoDB.DocumentClient();
   const email = event.requestContext.authorizer.claims.email;
 
@@ -12,7 +12,7 @@ const handler = async (event: Event<string>) => {
     .get({ TableName: 'Users', Key: { email: email } })
     .promise()
     .catch(error => {
-      throw Boom.badImplementation(error.message);
+      throw Boom.badImplementation(error);
     });
   const userId = currentUserDb.Item.id;
   const queryScan = {
@@ -42,7 +42,7 @@ const handler = async (event: Event<string>) => {
     })
     .promise()
     .catch(error => {
-      throw Boom.badImplementation(error.message);
+      throw Boom.badImplementation(error);
     });
 
   return {

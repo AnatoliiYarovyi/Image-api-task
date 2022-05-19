@@ -54,13 +54,14 @@ const middlewareEditResponse = (): middy.MiddlewareObj<
 
   const onError: middy.MiddlewareFn<
     APIGatewayProxyEvent,
-    APIGatewayProxyResult
+    APIGatewayProxyResult,
+    ErrorBoom
   > = async (request): Promise<void> => {
     console.log('*** onError ***: ', request);
     console.log('*** onError ***: ', request.error);
 
-    const body = request.error.message || request.error;
-    const statusCode = 500; //request.error.output.statusCode
+    const body = { error: { message: request.error.message || request.error } };
+    const statusCode = request.error.output.statusCode || 500;
     request.response = {
       body: JSON.stringify(body),
       headers: {

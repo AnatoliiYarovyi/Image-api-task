@@ -2,10 +2,12 @@ import AWS from 'aws-sdk';
 import Boom from '@hapi/boom';
 
 import { middyfy } from '../../libs/lambda';
-import { Event } from '../../interface/interface';
+import { EventBody } from '../../interface/interface';
 import validateSchemas from './validateSchema';
 
-const handler = async (event: Event<{ email: string; password: string }>) => {
+const handler = async (
+  event: EventBody<{ email: string; password: string }>,
+) => {
   const cognito = new AWS.CognitoIdentityServiceProvider();
 
   const { email, password } = event.body;
@@ -24,7 +26,7 @@ const handler = async (event: Event<{ email: string; password: string }>) => {
     .adminInitiateAuth(params)
     .promise()
     .catch(error => {
-      throw Boom.unauthorized(error.message);
+      throw Boom.unauthorized(error);
     });
 
   return {

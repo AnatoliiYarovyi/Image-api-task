@@ -10,6 +10,7 @@ export interface Event {
 }
 
 export interface ErrorBoom {
+  name: string;
   message: string;
   code: string;
   time: string;

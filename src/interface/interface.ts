@@ -1,20 +1,32 @@
-export interface Event<T> {
-  body?: T;
-  requestContext?: { authorizer: { claims: { email: T } } };
-  pathParameters?: {
-    image: T;
+export interface EventBody<T> {
+  body: T;
+}
+
+export interface Event {
+  requestContext: { authorizer: { claims: { email: string } } };
+  pathParameters: {
+    image: string;
   };
 }
 
-export interface Request<T> {
-  event: {
-    rawPath?: T; // post - path
-    resource?: T; // get & delete - path
-    body?: {
-      email: T;
-      password: T;
+export interface ErrorBoom {
+  message: string;
+  code: string;
+  time: string;
+  requestId: string;
+  statusCode: number;
+  retryable: boolean;
+  retryDelay: number;
+  isBoom: boolean;
+  isServer: boolean;
+  data: null;
+  output: {
+    statusCode: number;
+    payload: {
+      statusCode: number;
+      error: string;
+      message: string;
     };
+    headers: any;
   };
-  response?: any;
-  error?: any;
 }

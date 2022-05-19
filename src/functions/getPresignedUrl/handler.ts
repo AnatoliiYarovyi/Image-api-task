@@ -7,7 +7,7 @@ import { Event } from '../../interface/interface';
 
 const BUCKET_NAME = process.env.FILE_UPLOAD_BUCKET_NAME;
 
-const handler = async (event: Event<string>) => {
+const handler = async (event: Event) => {
   const s3 = new AWS.S3();
   const dynamodb = new AWS.DynamoDB.DocumentClient();
   const email = event.requestContext.authorizer.claims.email;
@@ -44,7 +44,7 @@ const handler = async (event: Event<string>) => {
     .get({ TableName: 'Users', Key: { email: email } })
     .promise()
     .catch(error => {
-      throw Boom.badImplementation(error.message);
+      throw Boom.badImplementation(error);
     });
 
   const newImage = {
@@ -57,7 +57,7 @@ const handler = async (event: Event<string>) => {
     .put({ TableName: 'Images', Item: newImage })
     .promise()
     .catch(error => {
-      throw Boom.badImplementation(error.message);
+      throw Boom.badImplementation(error);
     });
 
   return {

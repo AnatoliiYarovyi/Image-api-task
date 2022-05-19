@@ -11,44 +11,28 @@ const handler = async (event: Event<{ email: string; password: string }>) => {
   const dynamodb = new AWS.DynamoDB.DocumentClient();
 
   const { email, password } = event.body;
-  const { user_pool_id } = process.env;
+  const { client_id } = process.env;
 
   const params = {
-    UserPoolId: user_pool_id,
+    ClientId: client_id,
+    Password: password,
     Username: email,
-    MessageAction: 'SUPPRESS',
     UserAttributes: [
       {
         Name: 'email',
         Value: email,
       },
-      {
-        Name: 'email_verified',
-        Value: 'true',
-      },
     ],
   };
+
   const response = await cognito
-    .adminCreateUser(params)
+    .signUp(params)
     .promise()
     .catch(error => {
       throw Boom.unauthorized(error.message);
     });
 
-  if (response.User) {
-    const paramsForSetPass = {
-      Password: password,
-      UserPoolId: user_pool_id,
-      Username: email,
-      Permanent: true,
-    };
-    await cognito
-      .adminSetUserPassword(paramsForSetPass)
-      .promise()
-      .catch(error => {
-        throw Boom.unauthorized(error.message);
-      });
-  }
+  console.log('*** response ***: ', response);
 
   const newUser = {
     id: v4(),

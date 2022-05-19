@@ -9,6 +9,7 @@ exports.handler = async (event: any, context: Context, callback: Callback) => {
     event.response.autoVerifyEmail = true;
   }
 
+  console.log('*** event ***: ', event);
   // Return to Amazon Cognito
   callback(null, event);
 };
